@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        /* Base Colors */
+        --background: 210 20% 98%;
+        --foreground: 222 47% 11%;
+
+        /* Semantic Colors */
+        --primary: 221 83% 53%;
+        /* Premium Blue */
+        --primary-foreground: 210 40% 98%;
+
+        --secondary: 210 40% 96%;
+        --secondary-foreground: 222 47% 11%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 222 47% 11%;
+
+        --accent: 210 40% 96%;
+        --accent-foreground: 222 47% 11%;
+
+        --success: 142 71% 45%;
+        --warning: 38 92% 50%;
+        --danger: 0 84% 60%;
+
+        --border: 214 32% 91%;
+        --input: 214 32% 91%;
+        --ring: 221 83% 53%;
+
+        /* Layout Tokens */
+        --radius-sm: 0.5rem;
+        --radius-md: 1rem;
+        --radius-lg: 1.5rem;
+        --radius-xl: 2rem;
+
+        /* Glassmorphism Defaults */
+        --glass-bg: rgba(255, 255, 255, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.2);
+        --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    }
+
+    .dark {
+        --background: 222 47% 6%;
+        --foreground: 210 40% 98%;
+
+        --card: 222 47% 10%;
+        --card-foreground: 210 40% 98%;
+
+        --secondary: 217 33% 17%;
+        --secondary-foreground: 210 40% 98%;
+
+        --accent: 217 33% 17%;
+        --accent-foreground: 210 40% 98%;
+
+        --border: 217 33% 17%;
+        --input: 217 33% 17%;
+
+        --glass-bg: rgba(15, 23, 42, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.05);
+        --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground selection:bg-primary/20 transition-colors duration-300;
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
+}
+
+@layer components {
+    .glass-card {
+        @apply backdrop-blur-xl border border-white/20 rounded-[--radius-lg] shadow-[--glass-shadow] dark:border-white/5;
+        background: var(--glass-bg);
+    }
+
+    .premium-card {
+        @apply glass-card overflow-hidden hover:translate-y-[-4px] transition-all duration-300;
+    }
+
+    .btn-glow {
+        @apply shadow-[0_0_20px_rgba(var(--primary-rgb), 0.3)] hover:shadow-[0_0_30px_rgba(var(--primary-rgb), 0.5)];
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-border rounded-full hover:bg-slate-400 dark:hover:bg-slate-700 transition-colors;
+    }
+}
+
+/* Typography Enhancements */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    @apply tracking-tight font-bold;
+}
+
+.text-text-muted {
+    @apply text-foreground/60 font-medium;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
