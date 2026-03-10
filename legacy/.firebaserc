@@ -1,5 +1,7 @@
 {
-  "projects": {},
+  "projects": {
+    "default": "finance-book-pro-777888"
+  },
   "targets": {},
   "etags": {}
 }
