@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Wallet, Mail, Lock, LogIn } from 'lucide-react';
-import { m } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Modal from '../components/Modal';
 
 export default function Login() {
@@ -63,7 +63,7 @@ export default function Login() {
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-background p-6 relative overflow-hidden">
             {/* Dynamic Background Elements */}
-            <m.div
+            <motion.div
                 animate={{
                     scale: [1, 1.2, 1],
                     x: [0, 50, 0],
@@ -72,7 +72,7 @@ export default function Login() {
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                 className="absolute -top-[10%] -right-[10%] w-[60%] h-[60%] bg-primary/10 blur-[120px] rounded-full"
             />
-            <m.div
+            <motion.div
                 animate={{
                     scale: [1.2, 1, 1.2],
                     x: [0, -50, 0],
@@ -82,33 +82,33 @@ export default function Login() {
                 className="absolute -bottom-[10%] -left-[10%] w-[60%] h-[60%] bg-secondary/20 blur-[120px] rounded-full"
             />
 
-            <m.div
+            <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ type: "spring", damping: 25, stiffness: 400 }}
                 className="w-full max-w-[480px] space-y-10 premium-card p-10 sm:p-14 relative z-10 backdrop-blur-3xl border-white/10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]"
             >
                 <div className="text-center relative">
-                    <m.div
+                    <motion.div
                         initial={{ scale: 0.5, rotate: -20 }}
                         animate={{ scale: 1, rotate: 0 }}
                         transition={{ type: "spring", damping: 15 }}
                         className="mx-auto w-24 h-24 bg-gradient-to-br from-primary/30 to-primary/5 text-primary rounded-[2.5rem] flex items-center justify-center mb-8 border-2 border-primary/20 shadow-2xl shadow-primary/20"
                     >
                         <Wallet size={44} className="drop-shadow-lg" />
-                    </m.div>
+                    </motion.div>
                     <h1 className="text-4xl font-black text-foreground tracking-tighter">FINANCE<span className="text-primary/80">BOOK</span></h1>
                     <p className="text-[10px] text-foreground/30 font-black uppercase tracking-[0.4em] mt-3">Intelligence-Led Capital Management</p>
                 </div>
 
                 {error && (
-                    <m.div
+                    <motion.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         className="p-5 bg-danger/10 border border-danger/20 text-danger rounded-2xl text-xs font-black uppercase tracking-widest text-center"
                     >
                         {error}
-                    </m.div>
+                    </motion.div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-8">
@@ -151,7 +151,7 @@ export default function Login() {
                         </div>
                     </div>
 
-                    <m.button
+                    <motion.button
                         whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.98 }}
                         type="submit"
@@ -159,7 +159,7 @@ export default function Login() {
                         className="w-full py-5 bg-primary text-white rounded-2xl font-black transition-all shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 text-xs uppercase tracking-[0.2em] border-b-4 border-primary-foreground/20 hover:border-b-0 hover:translate-y-1 active:border-b-0"
                     >
                         {loading ? 'Decrypting Access...' : 'Authenticate'} <LogIn size={20} />
-                    </m.button>
+                    </motion.button>
                 </form>
 
                 <div className="relative py-10">
@@ -171,7 +171,7 @@ export default function Login() {
                     </div>
                 </div>
 
-                <m.button
+                <motion.button
                     whileHover={{ scale: 1.02, backgroundColor: "rgba(var(--foreground-rgb), 0.05)" }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleGoogleSignIn}
@@ -185,12 +185,12 @@ export default function Login() {
                         <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                     </svg>
                     Google Cloud Auth
-                </m.button>
+                </motion.button>
 
                 <p className="text-center text-xs text-foreground/30 font-black uppercase tracking-widest pt-4">
                     New Operator? <Link to="/signup" className="text-primary hover:text-primary/80 transition-colors border-b-2 border-primary/20 hover:border-primary pb-1 ml-2">Initialize Account</Link>
                 </p>
-            </m.div>
+            </motion.div>
 
             <Modal
                 isOpen={isResetModalOpen}

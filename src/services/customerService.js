@@ -9,9 +9,10 @@ import {
     where,
     orderBy,
     serverTimestamp,
-    increment
+    increment,
+    limit
 } from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { db } from '../firebase';
 
 const CUSTOMERS_COLLECTION = 'customers';
 const PAYMENTS_COLLECTION = 'payments';
@@ -31,7 +32,11 @@ export const customerService = {
 
     // Get all customers
     async getCustomers() {
-        const q = query(collection(db, CUSTOMERS_COLLECTION), orderBy('createdAt', 'desc'));
+        const q = query(
+            collection(db, CUSTOMERS_COLLECTION),
+            orderBy('createdAt', 'desc'),
+            limit(20)
+        );
         const querySnapshot = await getDocs(q);
         return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     },

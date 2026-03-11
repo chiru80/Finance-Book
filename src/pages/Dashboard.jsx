@@ -7,7 +7,7 @@ import {
     Calendar,
     ArrowRight
 } from 'lucide-react';
-import { m } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { formatCurrency } from '../utils/calculations';
 import { customerService } from '../services/customerService';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 const ChartSection = lazy(() => import('../components/DashboardChart'));
 
 const StatCard = ({ label, value, icon: Icon, color, bg, index }) => (
-    <m.div
+    <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.1, type: 'spring', stiffness: 200, damping: 20 }}
@@ -42,7 +42,7 @@ const StatCard = ({ label, value, icon: Icon, color, bg, index }) => (
 
         {/* Subtle background decoration */}
         <div className={`absolute -right-4 -bottom-4 w-24 h-24 rounded-full opacity-10 blur-2xl ${bg}`} />
-    </m.div>
+    </motion.div>
 );
 
 export default function Dashboard() {
@@ -132,7 +132,7 @@ export default function Dashboard() {
                 </Suspense>
 
                 {/* Upcoming Dues List */}
-                <m.div
+                <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.5 }}
@@ -148,7 +148,7 @@ export default function Dashboard() {
                         </span>
                     </div>
 
-                    <m.div
+                    <motion.div
                         variants={containerVariants}
                         initial="hidden"
                         animate="show"
@@ -162,20 +162,20 @@ export default function Dashboard() {
                             </div>
                         ) : upcomingDues.length === 0 ? (
                             <div className="text-center py-12 space-y-6">
-                                <m.div
+                                <motion.div
                                     animate={{ scale: [1, 1.1, 1] }}
                                     transition={{ repeat: Infinity, duration: 3 }}
                                     className="h-24 w-24 mx-auto bg-success/10 rounded-[2rem] flex items-center justify-center text-success border border-success/20 shadow-xl shadow-success/10"
                                 >
                                     <CheckCircle2 size={48} />
-                                </m.div>
+                                </motion.div>
                                 <div className="space-y-2">
                                     <p className="text-xl font-bold">Safe Horizon</p>
                                     <p className="text-text-muted text-sm px-4">All accounts are currently within compliance thresholds.</p>
                                 </div>
                             </div>
                         ) : upcomingDues.map((due) => (
-                            <m.div
+                            <motion.div
                                 key={due.id}
                                 variants={itemVariants}
                                 whileHover={{ x: 10, backgroundColor: "rgba(var(--primary-rgb), 0.03)" }}
@@ -188,41 +188,41 @@ export default function Dashboard() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="font-black text-foreground truncate text-lg tracking-tight">{due.name}</p>
-                                    <m.div
+                                    <motion.div
                                         initial={false}
                                         className={`flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider mt-1 ${due.status === 'overdue' ? 'text-danger' : 'text-warning'}`}
                                     >
                                         <div className={`w-1.5 h-1.5 rounded-full ${due.status === 'overdue' ? 'bg-danger' : 'bg-warning'} animate-pulse`} />
                                         {due.status === 'overdue' ? 'Critical Action Required' : 'Upcoming Compliance'}
-                                    </m.div>
+                                    </motion.div>
                                 </div>
                                 <div className="text-right">
                                     <p className={`font-black text-lg ${due.status === 'overdue' ? 'text-danger' : 'text-warning'}`}>
                                         {formatCurrency(due.installmentAmount)}
                                     </p>
-                                    <m.div
+                                    <motion.div
                                         whileHover={{ x: 3 }}
                                         className="flex items-center justify-end gap-1 mt-1 opacity-0 group-hover:opacity-100 transition-all duration-300"
                                     >
                                         <span className="text-[10px] font-black text-foreground/40">ANALYZE</span>
                                         <ArrowRight size={12} className="text-foreground/40" />
-                                    </m.div>
+                                    </motion.div>
                                 </div>
-                            </m.div>
+                            </motion.div>
                         ))}
-                    </m.div>
+                    </motion.div>
 
                     {upcomingDues.length > 0 && (
-                        <m.button
+                        <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => navigate('/customers')}
                             className="w-full mt-10 py-5 rounded-2xl bg-secondary/50 hover:bg-primary/10 hover:text-primary text-foreground/40 font-black transition-all duration-300 text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 border border-border/50"
                         >
                             View Intelligence Report <ArrowRight size={16} />
-                        </m.button>
+                        </motion.button>
                     )}
-                </m.div>
+                </motion.div>
             </div>
         </div>
     );

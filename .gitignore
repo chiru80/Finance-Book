@@ -1,8 +1,9 @@
-node_modules
-dist
+node_modules/
+.env
+.env.local
+.firebase/
+.vercel/
+dist/
+build/
+*.log
 .DS_Store
-*.local
-.env*
-build
-out
-.next
