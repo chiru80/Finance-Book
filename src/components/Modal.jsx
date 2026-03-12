@@ -27,33 +27,40 @@ export default function Modal({ isOpen, onClose, title, children }) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-black/60 backdrop-blur-md"
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        aria-hidden="true"
                     />
 
                     {/* Modal Container */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 10, rotateX: 10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 10, rotateX: -5 }}
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
                         transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-                        className="relative w-full max-w-xl premium-card bg-card/80 backdrop-blur-2xl border-white/10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] overflow-hidden"
+                        className="relative w-full max-w-xl premium-card overflow-hidden"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={title}
                     >
-                        <div className="flex items-center justify-between p-8 border-b border-border/50 bg-secondary/30">
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-6 border-b border-border/50" style={{ background: 'rgba(255,255,255,0.02)' }}>
                             <div>
-                                <h3 className="text-2xl font-black text-foreground tracking-tight">{title}</h3>
-                                <div className="h-1 w-12 bg-primary mt-2 rounded-full" />
+                                <h3 className="text-xl font-bold text-foreground">{title}</h3>
+                                <div className="h-0.5 w-10 bg-primary mt-2 rounded-full" />
                             </div>
                             <motion.button
                                 whileHover={{ scale: 1.1, rotate: 90 }}
                                 whileTap={{ scale: 0.9 }}
                                 onClick={onClose}
-                                className="p-3 bg-secondary/50 hover:bg-danger/10 rounded-2xl transition-all text-foreground/30 hover:text-danger border border-border/50"
+                                className="p-2.5 rounded-xl transition-all text-foreground/30 hover:text-danger hover:bg-danger/10 border border-border/50"
+                                aria-label="Close"
                             >
-                                <X size={20} />
+                                <X size={18} />
                             </motion.button>
                         </div>
 
-                        <div className="p-8 sm:p-10 max-h-[85vh] overflow-y-auto custom-scrollbar bg-card/10">
+                        {/* Body */}
+                        <div className="p-6 sm:p-8 max-h-[80vh] overflow-y-auto">
                             {children}
                         </div>
                     </motion.div>

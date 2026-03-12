@@ -4,31 +4,28 @@ import {
     Filter,
     ArrowUpRight,
     Phone,
-    UserPlus,
+    Users,
     ChevronRight,
-    MoreVertical,
     Mail
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { m, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { formatCurrency } from '../utils/calculations';
 import { customerService } from '../services/customerService';
 
 const StatusBadge = ({ status }) => {
     const styles = {
-        'paid': 'bg-success/10 text-success border-success/20 shadow-success/5',
-        'due-soon': 'bg-warning/10 text-warning border-warning/20 shadow-warning/5',
-        'overdue': 'bg-danger/10 text-danger border-danger/20 shadow-danger/5',
-        'active': 'bg-primary/10 text-primary border-primary/20 shadow-primary/5',
+        'paid': 'bg-success/10 text-success border-success/20',
+        'due-soon': 'bg-warning/10 text-warning border-warning/20',
+        'overdue': 'bg-danger/10 text-danger border-danger/20',
+        'active': 'bg-primary/10 text-primary border-primary/20',
     };
     return (
-        <m.span
-            initial={false}
-            animate={{ scale: [0.95, 1] }}
-            className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border shadow-sm backdrop-blur-sm ${styles[status] || styles.active}`}
+        <span
+            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${styles[status] || styles.active}`}
         >
             {status ? status.replace('-', ' ') : 'active'}
-        </m.span>
+        </span>
     );
 };
 
@@ -59,12 +56,7 @@ export default function Customers() {
 
     const containerVariants = {
         hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.05
-            }
-        }
+        show: { opacity: 1, transition: { staggerChildren: 0.05 } }
     };
 
     const itemVariants = {
@@ -73,58 +65,67 @@ export default function Customers() {
     };
 
     return (
-        <div className="space-y-10">
-            {/* Header with Search & Filters */}
-            <m.div
+        <div className="space-y-8">
+            {/* Page Header */}
+            <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+            >
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
+                    Customers
+                </h1>
+                <p className="text-sm text-foreground/40 mt-1 font-medium">
+                    Manage and monitor all customer accounts
+                </p>
+            </motion.div>
+
+            {/* Search & Filters */}
+            <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col md:flex-row gap-6 justify-between items-center premium-card p-6"
+                className="flex flex-col md:flex-row gap-4 items-center premium-card p-4 sm:p-5"
             >
-                <div className="relative w-full md:w-[450px] group">
-                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-foreground/30 group-focus-within:text-primary transition-colors" size={20} />
+                <div className="relative w-full md:w-[400px] group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/20 group-focus-within:text-primary transition-colors" size={18} aria-hidden="true" />
                     <input
                         type="text"
-                        placeholder="Search portfolios, IDs, or contacts..."
-                        className="w-full bg-secondary/50 border border-border focus:border-primary/40 focus:ring-4 focus:ring-primary/5 rounded-2xl pl-14 pr-6 py-4 outline-none transition-all text-sm font-medium"
+                        placeholder="Search by name or phone..."
+                        className="w-full border border-border focus:border-primary/40 focus:ring-2 focus:ring-primary/10 rounded-xl pl-11 pr-4 py-3 outline-none transition-all text-sm font-medium text-foreground"
+                        style={{ background: 'rgba(255,255,255,0.04)' }}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        aria-label="Search customers"
                     />
                 </div>
-                <div className="flex gap-4 w-full md:w-auto">
-                    <m.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-3 px-8 py-4 bg-card border border-border rounded-2xl text-foreground font-black hover:bg-secondary transition-all text-xs uppercase tracking-[0.15em] shadow-sm"
-                    >
-                        <Filter size={18} />
-                        <span>Filter Intelligence</span>
-                    </m.button>
-                </div>
-            </m.div>
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex items-center gap-2 px-5 py-3 border border-border rounded-xl text-foreground/50 hover:text-foreground hover:bg-white/5 font-bold text-sm transition-all"
+                >
+                    <Filter size={16} aria-hidden="true" />
+                    <span>Filter</span>
+                </motion.button>
+            </motion.div>
 
-            {/* Customers List / Table */}
-            <div className="premium-card overflow-hidden bg-card/30 border-white/5">
+            {/* Customers List */}
+            <div className="premium-card overflow-hidden">
                 {loading ? (
-                    <div className="p-32 flex flex-col items-center gap-6">
-                        <div className="relative">
-                            <div className="h-16 w-16 border-4 border-primary/10 border-t-primary rounded-full animate-spin" />
-                            <Users size={24} className="absolute inset-0 m-auto text-primary/40 animate-pulse" />
-                        </div>
-                        <p className="text-foreground/40 text-xs font-black uppercase tracking-widest animate-pulse">Syncing Distributed Ledgers...</p>
+                    <div className="p-20 flex flex-col items-center gap-4">
+                        <div className="h-14 w-14 border-4 border-primary/10 border-t-primary rounded-full animate-spin" />
+                        <p className="text-foreground/30 text-sm font-medium">Loading customers...</p>
                     </div>
                 ) : filteredCustomers.length === 0 ? (
-                    <div className="p-32 text-center space-y-8">
-                        <m.div
-                            animate={{ y: [0, -10, 0] }}
-                            transition={{ repeat: Infinity, duration: 4 }}
-                            className="h-28 w-28 mx-auto bg-secondary/50 rounded-[2.5rem] flex items-center justify-center text-foreground/20 border border-border shadow-inner"
+                    <div className="p-20 text-center space-y-4">
+                        <motion.div
+                            animate={{ y: [0, -8, 0] }}
+                            transition={{ repeat: Infinity, duration: 3 }}
+                            className="h-20 w-20 mx-auto rounded-2xl flex items-center justify-center text-foreground/15 border border-border"
+                            style={{ background: 'rgba(255,255,255,0.03)' }}
                         >
-                            <Users size={48} />
-                        </m.div>
-                        <div className="max-w-xs mx-auto space-y-3">
-                            <h3 className="text-2xl font-black tracking-tight">Zero Datapoints</h3>
-                            <p className="text-foreground/40 text-sm font-medium">No active accounts matching your search parameters were found in the current environment.</p>
-                        </div>
+                            <Users size={40} aria-hidden="true" />
+                        </motion.div>
+                        <h3 className="text-xl font-bold">No customers found</h3>
+                        <p className="text-foreground/40 text-sm">Try a different search or add a new customer.</p>
                     </div>
                 ) : (
                     <>
@@ -132,134 +133,127 @@ export default function Customers() {
                         <div className="hidden lg:block overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead>
-                                    <tr className="border-b border-border text-foreground/30 text-[10px] font-black uppercase tracking-[0.25em] bg-secondary/20 backdrop-blur-md">
-                                        <th className="px-10 py-6">ENTITY PROFILE</th>
-                                        <th className="px-10 py-6">COMMUNICATION CHANNEL</th>
-                                        <th className="px-10 py-6">COMPLIANCE STATUS</th>
-                                        <th className="px-10 py-6">ACTIVE EXPOSURE</th>
-                                        <th className="px-10 py-6 text-right">OPERATIONS</th>
+                                    <tr className="border-b border-border text-foreground/30 text-[11px] font-bold uppercase tracking-wider" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                                        <th className="px-6 py-4">Customer</th>
+                                        <th className="px-6 py-4">Contact</th>
+                                        <th className="px-6 py-4">Status</th>
+                                        <th className="px-6 py-4">Balance</th>
+                                        <th className="px-6 py-4 text-right">Action</th>
                                     </tr>
                                 </thead>
-                                <m.tbody
+                                <motion.tbody
                                     variants={containerVariants}
                                     initial="hidden"
                                     animate="show"
-                                    className="divide-y divide-border/50"
+                                    className="divide-y divide-border/30"
                                 >
                                     {filteredCustomers.map((customer) => (
-                                        <m.tr
+                                        <motion.tr
                                             key={customer.id}
                                             variants={itemVariants}
-                                            whileHover={{ backgroundColor: "rgba(var(--primary-rgb), 0.02)" }}
-                                            className="hover:bg-secondary/30 transition-all duration-300 group cursor-default"
+                                            className="hover:bg-white/[0.02] transition-all cursor-pointer group"
+                                            onClick={() => navigate(`/customers/${customer.id}`)}
                                         >
-                                            <td className="px-10 py-8">
-                                                <div className="flex items-center gap-5">
-                                                    <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 text-primary flex items-center justify-center font-black text-xl border border-primary/10 shadow-lg shadow-primary/5 group-hover:scale-110 transition-transform">
+                                            <td className="px-6 py-5">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="h-11 w-11 rounded-xl flex items-center justify-center font-bold text-lg border border-primary/20 text-primary"
+                                                        style={{ background: 'rgba(124,58,237,0.1)' }}
+                                                    >
                                                         {customer.name.charAt(0)}
                                                     </div>
                                                     <div>
-                                                        <p className="font-black text-foreground text-lg tracking-tight group-hover:text-primary transition-colors">{customer.name}</p>
-                                                        <p className="text-[10px] text-foreground/30 font-bold uppercase tracking-widest mt-1">ID: {customer.id.slice(0, 12)}</p>
+                                                        <p className="font-bold text-foreground group-hover:text-primary transition-colors">{customer.name}</p>
+                                                        <p className="text-[10px] text-foreground/25 font-medium mt-0.5">ID: {customer.id.slice(0, 10)}</p>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-10 py-8">
-                                                <div className="space-y-2">
-                                                    <div className="flex items-center gap-2.5 text-sm text-foreground/60 font-bold">
-                                                        <div className="p-1.5 bg-secondary rounded-lg">
-                                                            <Phone size={14} className="text-primary" />
-                                                        </div>
-                                                        {customer.phone}
-                                                    </div>
-                                                    <div className="flex items-center gap-2.5 text-xs text-foreground/30 font-medium ml-1">
-                                                        <Mail size={12} />
-                                                        {customer.email || 'encrypted@relay.io'}
-                                                    </div>
+                                            <td className="px-6 py-5">
+                                                <div className="flex items-center gap-2 text-sm text-foreground/50 font-medium">
+                                                    <Phone size={14} className="text-primary/60" aria-hidden="true" />
+                                                    {customer.phone}
                                                 </div>
                                             </td>
-                                            <td className="px-10 py-8">
+                                            <td className="px-6 py-5">
                                                 <StatusBadge status={customer.status} />
                                             </td>
-                                            <td className="px-10 py-8">
-                                                <p className="text-xl font-black text-foreground tracking-tight">
-                                                    {formatCurrency(customer.remainingBalance || 0)}
-                                                </p>
-                                                <div className="w-32 h-2 bg-secondary rounded-full mt-3 overflow-hidden border border-border/50">
-                                                    <m.div
+                                            <td className="px-6 py-5">
+                                                <p className="font-bold text-foreground">{formatCurrency(customer.remainingBalance || 0)}</p>
+                                                <div className="w-24 h-1.5 bg-white/5 rounded-full mt-2 overflow-hidden">
+                                                    <motion.div
                                                         initial={{ width: 0 }}
                                                         animate={{ width: `${Math.min(100, (customer.totalPaid / customer.loanAmount) * 100)}%` }}
-                                                        transition={{ duration: 1.5, ease: "circOut" }}
-                                                        className="h-full bg-gradient-to-r from-primary to-primary/60"
+                                                        transition={{ duration: 1.2, ease: "circOut" }}
+                                                        className="h-full rounded-full"
+                                                        style={{ background: 'linear-gradient(90deg, #7C3AED, #A78BFA)' }}
                                                     />
                                                 </div>
                                             </td>
-                                            <td className="px-10 py-8 text-right">
-                                                <m.button
-                                                    whileHover={{ scale: 1.05, x: 5 }}
+                                            <td className="px-6 py-5 text-right">
+                                                <motion.button
+                                                    whileHover={{ scale: 1.05 }}
                                                     whileTap={{ scale: 0.95 }}
-                                                    onClick={() => navigate(`/customers/${customer.id}`)}
-                                                    className="px-6 py-3 bg-secondary rounded-xl text-foreground/60 hover:text-primary hover:bg-primary/10 transition-all inline-flex items-center gap-3 font-black text-xs uppercase tracking-widest group/btn border border-border/50"
+                                                    onClick={(e) => { e.stopPropagation(); navigate(`/customers/${customer.id}`); }}
+                                                    className="px-4 py-2 rounded-lg text-foreground/40 hover:text-primary hover:bg-primary/10 transition-all inline-flex items-center gap-2 font-bold text-xs border border-border/50"
+                                                    aria-label={`View details for ${customer.name}`}
                                                 >
-                                                    Analysis <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                                                </m.button>
+                                                    View <ChevronRight size={14} aria-hidden="true" />
+                                                </motion.button>
                                             </td>
-                                        </m.tr>
+                                        </motion.tr>
                                     ))}
-                                </m.tbody>
+                                </motion.tbody>
                             </table>
                         </div>
 
-                        {/* Mobile/Tablet Card View */}
-                        <m.div
+                        {/* Mobile Card View */}
+                        <motion.div
                             variants={containerVariants}
                             initial="hidden"
                             animate="show"
-                            className="lg:hidden divide-y divide-border/50"
+                            className="lg:hidden divide-y divide-border/20"
                         >
                             {filteredCustomers.map((customer) => (
-                                <m.div
+                                <motion.div
                                     key={customer.id}
                                     variants={itemVariants}
                                     onClick={() => navigate(`/customers/${customer.id}`)}
-                                    className="p-8 hover:bg-secondary/30 transition-all cursor-pointer group active:scale-[0.98]"
+                                    className="p-5 hover:bg-white/[0.02] transition-all cursor-pointer group active:scale-[0.99]"
                                 >
-                                    <div className="flex items-start justify-between mb-6">
-                                        <div className="flex items-center gap-5">
-                                            <div className="h-16 w-16 rounded-[1.25rem] bg-gradient-to-br from-primary/20 to-primary/5 text-primary flex items-center justify-center font-black text-2xl border border-primary/20 shadow-xl shadow-primary/5">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-12 w-12 rounded-xl flex items-center justify-center font-bold text-lg border border-primary/20 text-primary"
+                                                style={{ background: 'rgba(124,58,237,0.1)' }}
+                                            >
                                                 {customer.name.charAt(0)}
                                             </div>
                                             <div>
-                                                <h3 className="text-xl font-black text-foreground group-hover:text-primary transition-colors tracking-tight">{customer.name}</h3>
-                                                <p className="text-xs text-foreground/40 flex items-center gap-2 mt-1.5 font-bold uppercase tracking-widest">
-                                                    <Phone size={14} className="text-primary" /> {customer.phone}
+                                                <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">{customer.name}</h3>
+                                                <p className="text-xs text-foreground/30 flex items-center gap-1.5 mt-0.5 font-medium">
+                                                    <Phone size={12} className="text-primary/60" aria-hidden="true" /> {customer.phone}
                                                 </p>
                                             </div>
                                         </div>
                                         <StatusBadge status={customer.status} />
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-5 mt-8">
-                                        <div className="p-5 rounded-2xl bg-secondary/50 border border-border/50 group-hover:border-primary/20 transition-colors">
-                                            <p className="text-[10px] text-foreground/30 uppercase font-black tracking-[0.2em] mb-2">Exposure</p>
-                                            <p className="text-xl font-black text-foreground tracking-tight">{formatCurrency(customer.remainingBalance || 0)}</p>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="p-3 rounded-xl border border-border/30" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                                            <p className="text-[10px] text-foreground/25 uppercase font-bold tracking-wider mb-1">Balance</p>
+                                            <p className="text-base font-bold text-foreground">{formatCurrency(customer.remainingBalance || 0)}</p>
                                         </div>
-                                        <div className="p-5 rounded-2xl bg-secondary/50 border border-border/50 group-hover:border-primary/20 transition-colors">
-                                            <p className="text-[10px] text-foreground/30 uppercase font-black tracking-[0.2em] mb-2">Cycle Rate</p>
-                                            <p className="text-xl font-black text-primary tracking-tight">{formatCurrency(customer.installmentAmount || 0)}</p>
+                                        <div className="p-3 rounded-xl border border-border/30" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                                            <p className="text-[10px] text-foreground/25 uppercase font-bold tracking-wider mb-1">Installment</p>
+                                            <p className="text-base font-bold text-primary">{formatCurrency(customer.installmentAmount || 0)}</p>
                                         </div>
                                     </div>
 
-                                    <div className="mt-6 flex items-center justify-between text-[11px] font-black uppercase tracking-[0.25em] text-foreground/20">
-                                        <span>System Node: {customer.id.slice(0, 8)}</span>
-                                        <div className="flex items-center gap-2 group-hover:text-primary transition-colors">
-                                            <span>Full Metrics</span>
-                                            <ArrowUpRight size={14} />
-                                        </div>
+                                    <div className="mt-3 flex items-center justify-end text-xs font-bold text-foreground/20 group-hover:text-primary transition-colors">
+                                        <span>View Details</span>
+                                        <ArrowUpRight size={14} className="ml-1" aria-hidden="true" />
                                     </div>
-                                </m.div>
+                                </motion.div>
                             ))}
-                        </m.div>
+                        </motion.div>
                     </>
                 )}
             </div>

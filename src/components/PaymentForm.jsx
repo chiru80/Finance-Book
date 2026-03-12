@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Wallet, Calendar, FileText, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
+import { motion } from 'framer-motion';
 
 export default function PaymentForm({ customer, onSubmit, onCancel }) {
     const [amount, setAmount] = useState(customer.installmentAmount || '');
@@ -20,10 +21,7 @@ export default function PaymentForm({ customer, onSubmit, onCancel }) {
 
     const containerVariants = {
         hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: { staggerChildren: 0.1 }
-        }
+        show: { opacity: 1, transition: { staggerChildren: 0.05 } }
     };
 
     const itemVariants = {
@@ -32,101 +30,112 @@ export default function PaymentForm({ customer, onSubmit, onCancel }) {
     };
 
     return (
-        <m.form
+        <motion.form
             variants={containerVariants}
             initial="hidden"
             animate="show"
             onSubmit={handleSubmit}
-            className="space-y-8"
+            className="space-y-6"
         >
-            <div className="space-y-6">
+            <div className="space-y-5">
                 {/* Amount Field */}
-                <m.div variants={itemVariants} className="space-y-3">
-                    <label className="text-[10px] font-black text-foreground/30 uppercase tracking-[0.2em] flex items-center gap-2 ml-1">
-                        <Wallet size={14} className="text-primary" /> Injection Amount
+                <motion.div variants={itemVariants} className="space-y-2">
+                    <label htmlFor="payment-amount" className="text-xs font-bold text-foreground/40 uppercase tracking-wider flex items-center gap-2 ml-1">
+                        <Wallet size={14} className="text-primary/70" aria-hidden="true" /> Amount
                     </label>
                     <div className="relative group">
-                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-primary font-black text-xl">₹</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary font-bold text-lg" aria-hidden="true">₹</span>
                         <input
+                            id="payment-amount"
                             type="number"
                             required
-                            className="w-full bg-secondary/50 border border-border group-focus-within:border-primary/40 group-focus-within:ring-4 group-focus-within:ring-primary/5 rounded-2xl pl-12 pr-6 py-5 outline-none transition-all font-black text-2xl text-foreground tracking-tight"
+                            className="w-full border border-border group-focus-within:border-primary/40 group-focus-within:ring-2 group-focus-within:ring-primary/10 rounded-xl pl-9 pr-4 py-4 outline-none transition-all font-bold text-xl text-foreground"
+                            style={{ background: 'rgba(255,255,255,0.04)' }}
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
                         />
                     </div>
-                </m.div>
+                </motion.div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {/* Date Field */}
-                    <m.div variants={itemVariants} className="space-y-3">
-                        <label className="text-[10px] font-black text-foreground/30 uppercase tracking-[0.2em] flex items-center gap-2 ml-1">
-                            <Calendar size={14} className="text-primary" /> Execution Date
+                    <motion.div variants={itemVariants} className="space-y-2">
+                        <label htmlFor="payment-date" className="text-xs font-bold text-foreground/40 uppercase tracking-wider flex items-center gap-2 ml-1">
+                            <Calendar size={14} className="text-primary/70" aria-hidden="true" /> Date
                         </label>
                         <input
+                            id="payment-date"
                             type="date"
                             required
-                            className="w-full bg-secondary/50 border border-border focus:border-primary/40 focus:ring-4 focus:ring-primary/5 rounded-2xl px-6 py-4 outline-none transition-all text-foreground font-bold"
+                            className="w-full border border-border focus:border-primary/40 focus:ring-2 focus:ring-primary/10 rounded-xl px-4 py-3 outline-none transition-all text-foreground font-bold text-sm"
+                            style={{ background: 'rgba(255,255,255,0.04)' }}
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
                         />
-                    </m.div>
+                    </motion.div>
 
                     {/* Method Select */}
-                    <m.div variants={itemVariants} className="space-y-3">
-                        <label className="text-[10px] font-black text-foreground/30 uppercase tracking-[0.2em] ml-1">Protocol (Method)</label>
-                        <div className="flex bg-secondary/50 p-1.5 rounded-2xl border border-border">
-                            {['UPI', 'Cash', 'Bank'].map((m) => (
-                                <button
-                                    key={m}
-                                    type="button"
-                                    onClick={() => setMethod(m)}
-                                    className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all uppercase tracking-widest ${method === m
-                                        ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                                        : 'text-foreground/30 hover:text-foreground/60'
-                                        }`}
-                                >
-                                    {m}
-                                </button>
-                            ))}
-                        </div>
-                    </m.div>
+                    <motion.div variants={itemVariants} className="space-y-2">
+                        <fieldset>
+                            <legend className="text-xs font-bold text-foreground/40 uppercase tracking-wider ml-1 mb-2">Method</legend>
+                            <div className="flex p-1.5 rounded-xl border border-border" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                                {['UPI', 'Cash', 'Bank'].map((m) => (
+                                    <label key={m} className="flex-1 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            className="sr-only peer"
+                                            name="payment-method"
+                                            value={m}
+                                            checked={method === m}
+                                            onChange={() => setMethod(m)}
+                                            aria-label={`Payment method: ${m}`}
+                                        />
+                                        <div className="py-2 text-center rounded-lg text-xs font-bold transition-all uppercase tracking-wider text-foreground/40 peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-md hover:text-foreground">
+                                            {m}
+                                        </div>
+                                    </label>
+                                ))}
+                            </div>
+                        </fieldset>
+                    </motion.div>
                 </div>
 
                 {/* Notes */}
-                <m.div variants={itemVariants} className="space-y-3">
-                    <label className="text-[10px] font-black text-foreground/30 uppercase tracking-[0.2em] flex items-center gap-2 ml-1">
-                        <FileText size={14} className="text-primary" /> Ledger Annotation
+                <motion.div variants={itemVariants} className="space-y-2">
+                    <label htmlFor="payment-notes" className="text-xs font-bold text-foreground/40 uppercase tracking-wider flex items-center gap-2 ml-1">
+                        <FileText size={14} className="text-primary/70" aria-hidden="true" /> Notes (Optional)
                     </label>
                     <textarea
-                        className="w-full bg-secondary/50 border border-border focus:border-primary/40 focus:ring-4 focus:ring-primary/5 rounded-2xl px-6 py-4 outline-none transition-all text-foreground font-medium resize-none"
+                        id="payment-notes"
+                        className="w-full border border-border focus:border-primary/40 focus:ring-2 focus:ring-primary/10 rounded-xl px-4 py-3 outline-none transition-all text-foreground font-medium text-sm resize-none"
+                        style={{ background: 'rgba(255,255,255,0.04)' }}
                         rows="2"
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
-                        placeholder="Additional transaction context..."
+                        placeholder="Add details about this payment..."
                     />
-                </m.div>
+                </motion.div>
             </div>
 
-            <m.div variants={itemVariants} className="flex gap-4 pt-6 mt-6 border-t border-border/50">
-                <m.button
-                    whileHover={{ backgroundColor: "rgba(var(--foreground-rgb), 0.05)" }}
+            <motion.div variants={itemVariants} className="flex gap-4 pt-4 border-t border-border/20">
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     type="button"
                     onClick={onCancel}
-                    className="flex-1 py-4 rounded-2xl border border-border text-foreground/40 font-black uppercase tracking-widest text-[11px] transition-all"
+                    className="flex-1 py-3.5 rounded-xl border border-border text-foreground/60 font-bold text-sm transition-all hover:bg-white/5"
                 >
-                    Abort
-                </m.button>
-                <m.button
-                    whileHover={{ scale: 1.02, y: -2 }}
+                    Cancel
+                </motion.button>
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     type="submit"
-                    className="flex-2 px-10 py-4 bg-primary text-white rounded-2xl font-black transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3 text-[11px] uppercase tracking-widest border-b-4 border-primary-foreground/20"
+                    className="flex-1 py-3.5 bg-primary text-white rounded-xl font-bold transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2 text-sm"
                 >
-                    Confirm Injection <ChevronRight size={18} />
-                </m.button>
-            </m.div>
-        </m.form>
+                    Confirm Payment <ChevronRight size={18} aria-hidden="true" />
+                </motion.button>
+            </motion.div>
+        </motion.form>
     );
 }

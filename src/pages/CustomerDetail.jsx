@@ -10,11 +10,9 @@ import {
     CheckCircle2,
     AlertCircle,
     TrendingUp,
-    MoreVertical,
-    ChevronRight,
     ArrowDownIcon
 } from 'lucide-react';
-import { m, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { formatCurrency } from '../utils/calculations';
 import Modal from '../components/Modal';
 import PaymentForm from '../components/PaymentForm';
@@ -28,7 +26,7 @@ export default function CustomerDetail() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetch = async () => {
+        const fetchData = async () => {
             try {
                 const res = await customerService.getCustomerWithPayments(id);
                 setData(res);
@@ -38,7 +36,7 @@ export default function CustomerDetail() {
                 setLoading(false);
             }
         };
-        fetch();
+        fetchData();
     }, [id]);
 
     const handlePayment = async (paymentData) => {
@@ -53,17 +51,17 @@ export default function CustomerDetail() {
 
     if (loading) return (
         <div className="p-20 flex flex-col items-center gap-4">
-            <div className="h-10 w-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-            <p className="text-text-muted font-medium animate-pulse">Loading profile...</p>
+            <div className="h-12 w-12 border-4 border-primary/10 border-t-primary rounded-full animate-spin" />
+            <p className="text-foreground/30 font-medium">Loading customer...</p>
         </div>
     );
 
     if (!data) return (
         <div className="p-20 text-center space-y-4">
-            <div className="h-20 w-20 mx-auto bg-danger/10 text-danger rounded-3xl flex items-center justify-center">
-                <AlertCircle size={40} />
+            <div className="h-20 w-20 mx-auto bg-danger/10 text-danger rounded-2xl flex items-center justify-center border border-danger/20">
+                <AlertCircle size={40} aria-hidden="true" />
             </div>
-            <h2 className="text-2xl font-bold text-card-foreground">Customer Not Found</h2>
+            <h2 className="text-2xl font-bold text-foreground">Customer Not Found</h2>
             <button onClick={() => navigate('/customers')} className="text-primary font-bold hover:underline underline-offset-4">
                 Back to Customers
             </button>
@@ -74,10 +72,7 @@ export default function CustomerDetail() {
 
     const containerVariants = {
         hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: { staggerChildren: 0.1 }
-        }
+        show: { opacity: 1, transition: { staggerChildren: 0.1 } }
     };
 
     const itemVariants = {
@@ -85,210 +80,214 @@ export default function CustomerDetail() {
         show: { opacity: 1, y: 0 }
     };
 
+    const statItems = [
+        { label: 'Start Date', value: customer.startDate, icon: Calendar, color: 'text-accent-light', bg: 'rgba(167,139,250,0.08)' },
+        { label: 'Frequency', value: 'Weekly', icon: TrendingUp, color: 'text-primary', bg: 'rgba(124,58,237,0.08)' },
+        { label: 'Installment', value: formatCurrency(customer.installmentAmount), icon: CreditCard, color: 'text-success', bg: 'rgba(16,185,129,0.08)' },
+        { label: 'Total Paid', value: formatCurrency(customer.totalPaid), icon: CheckCircle2, color: 'text-success', bg: 'rgba(16,185,129,0.08)' },
+    ];
+
     return (
-        <div className="max-w-7xl mx-auto space-y-12 pb-20">
+        <div className="max-w-7xl mx-auto space-y-8 pb-20">
             {/* Header */}
-            <m.div
+            <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="flex items-center gap-6"
+                className="flex items-center gap-4"
             >
-                <m.button
-                    whileHover={{ scale: 1.1, x: -5 }}
-                    whileTap={{ scale: 0.9 }}
+                <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => navigate('/customers')}
-                    className="p-4 bg-card hover:bg-secondary border border-border rounded-2xl transition-all text-foreground/40 hover:text-primary shadow-xl shadow-black/5"
+                    className="p-3 rounded-xl border border-border text-foreground/40 hover:text-primary hover:bg-primary/5 transition-all"
+                    aria-label="Back to customers"
                 >
-                    <ArrowLeft size={24} />
-                </m.button>
+                    <ArrowLeft size={22} />
+                </motion.button>
                 <div>
-                    <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">Entity Analysis</h2>
-                    <p className="text-xs text-foreground/40 font-black uppercase tracking-[0.2em] mt-1">Deep metrics for Node #{id.slice(0, 12)}</p>
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">Customer Details</h2>
+                    <p className="text-xs text-foreground/30 font-medium mt-0.5">Account #{id.slice(0, 10)}</p>
                 </div>
-            </m.div>
+            </motion.div>
 
-            <m.div
+            <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
-                className="grid grid-cols-1 lg:grid-cols-12 gap-10"
+                className="grid grid-cols-1 lg:grid-cols-12 gap-8"
             >
-                {/* Left Column: Stats and Info */}
-                <div className="lg:col-span-4 space-y-10">
-                    {/* Main Info Card */}
-                    <m.div variants={itemVariants} className="premium-card p-10 relative overflow-hidden group">
-                        {/* Status Glow Background */}
-                        <m.div
-                            animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-                            transition={{ repeat: Infinity, duration: 5 }}
-                            className={`absolute top-0 right-0 w-48 h-48 blur-[60px] rounded-full -mr-24 -mt-24 opacity-20 ${customer.status === 'overdue' ? 'bg-danger' :
+                {/* Left Column — Customer Info */}
+                <div className="lg:col-span-4 space-y-6">
+                    {/* Profile Card */}
+                    <motion.div variants={itemVariants} className="premium-card p-8 relative overflow-hidden">
+                        {/* Status glow */}
+                        <div
+                            className={`absolute top-0 right-0 w-40 h-40 blur-[60px] rounded-full -mr-20 -mt-20 opacity-15 ${
+                                customer.status === 'overdue' ? 'bg-danger' :
                                 customer.status === 'due-soon' ? 'bg-warning' : 'bg-success'
-                                }`}
+                            }`}
+                            aria-hidden="true"
                         />
 
-                        <div className="relative flex flex-col items-center text-center mb-10">
-                            <m.div
-                                whileHover={{ rotate: 10, scale: 1.1 }}
-                                className="h-32 w-32 rounded-[2.5rem] bg-gradient-to-br from-primary/20 to-primary/5 text-primary flex items-center justify-center text-5xl font-black border-2 border-primary/20 shadow-2xl shadow-primary/10 mb-6"
+                        <div className="relative flex flex-col items-center text-center mb-8">
+                            <motion.div
+                                whileHover={{ scale: 1.05 }}
+                                className="h-24 w-24 rounded-2xl flex items-center justify-center text-4xl font-bold border border-primary/20 text-primary mb-4"
+                                style={{ background: 'rgba(124,58,237,0.1)' }}
                             >
                                 {customer.name.charAt(0)}
-                            </m.div>
-                            <h3 className="text-3xl font-black text-foreground tracking-tight">{customer.name}</h3>
-                            <div className="flex items-center gap-2 mt-2 bg-secondary/50 px-4 py-1.5 rounded-full border border-border/50">
-                                <Phone size={14} className="text-primary" />
-                                <span className="text-sm font-black text-foreground/60">{customer.phone}</span>
+                            </motion.div>
+                            <h3 className="text-2xl font-extrabold text-foreground tracking-tight">{customer.name}</h3>
+                            <div className="flex items-center gap-2 mt-2 px-3 py-1 rounded-lg border border-border/50 text-foreground/40" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                                <Phone size={14} className="text-primary/60" aria-hidden="true" />
+                                <span className="text-sm font-medium">{customer.phone}</span>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-5">
-                            <div className="p-5 rounded-2xl bg-secondary/50 border border-border/50">
-                                <p className="text-[10px] text-foreground/30 font-black uppercase tracking-widest mb-2">Total Exposure</p>
-                                <p className="text-xl font-black text-foreground tracking-tight">{formatCurrency(customer.loanAmount)}</p>
+                        <div className="grid grid-cols-2 gap-3 mb-6">
+                            <div className="p-4 rounded-xl border border-border/30" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                                <p className="text-[10px] text-foreground/25 uppercase font-bold tracking-wider mb-1">Loan Amount</p>
+                                <p className="text-lg font-bold text-foreground">{formatCurrency(customer.loanAmount)}</p>
                             </div>
-                            <div className="p-5 rounded-2xl bg-secondary/50 border border-border/50">
-                                <p className="text-[10px] text-foreground/30 font-black uppercase tracking-widest mb-2">Remaining</p>
-                                <p className={`text-xl font-black tracking-tight ${customer.status === 'overdue' ? 'text-danger' : 'text-warning'}`}>
+                            <div className="p-4 rounded-xl border border-border/30" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                                <p className="text-[10px] text-foreground/25 uppercase font-bold tracking-wider mb-1">Remaining</p>
+                                <p className={`text-lg font-bold ${customer.status === 'overdue' ? 'text-danger' : 'text-warning'}`}>
                                     {formatCurrency(customer.remainingBalance)}
                                 </p>
                             </div>
                         </div>
 
-                        <m.button
-                            whileHover={{ scale: 1.02, y: -2 }}
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => setIsModalOpen(true)}
-                            className="w-full mt-10 py-5 bg-primary text-white rounded-2xl font-black transition-all shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 border-b-4 border-primary-foreground/20 hover:border-b-0 hover:translate-y-1 active:border-b-0"
+                            className="w-full py-4 bg-primary text-white rounded-xl font-bold transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2 text-sm"
+                            aria-label={`Record payment for ${customer.name}`}
                         >
-                            <DollarSign size={22} />
-                            <span>Inject Payment</span>
-                        </m.button>
-                    </m.div>
+                            <DollarSign size={18} aria-hidden="true" />
+                            Record Payment
+                        </motion.button>
+                    </motion.div>
 
-                    {/* Detailed Stats */}
-                    <m.div variants={itemVariants} className="premium-card p-10 space-y-10 bg-card/50">
-                        <div className="flex items-center justify-between border-b border-border/50 pb-6">
-                            <h4 className="text-xs font-black text-foreground/30 uppercase tracking-[0.25em]">Vault Summary</h4>
-                            <div className="h-1.5 w-1.5 rounded-full bg-success animate-ping" />
+                    {/* Stats Card */}
+                    <motion.div variants={itemVariants} className="premium-card p-6 space-y-5">
+                        <div className="flex items-center justify-between border-b border-border/30 pb-4">
+                            <h4 className="text-xs font-bold text-foreground/30 uppercase tracking-wider">Account Summary</h4>
+                            <div className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" aria-hidden="true" />
                         </div>
-                        <div className="space-y-6">
-                            {[
-                                { label: 'Inception', value: customer.startDate, icon: Calendar, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-                                { label: 'Cycle Rate', value: 'Weekly Protocol', icon: TrendingUp, color: 'text-purple-500', bg: 'bg-purple-500/10' },
-                                { label: 'Installment', value: formatCurrency(customer.installmentAmount), icon: CreditCard, color: 'text-green-500', bg: 'bg-green-500/10' },
-                                { label: 'Total Sourced', value: formatCurrency(customer.totalPaid), icon: CheckCircle2, color: 'text-primary', bg: 'bg-primary/10' },
-                            ].map((item, i) => (
-                                <div key={i} className="flex items-center justify-between group">
-                                    <div className="flex items-center gap-4">
-                                        <div className={cn("p-2.5 rounded-xl transition-all group-hover:scale-110", item.bg, item.color)}>
-                                            <item.icon size={18} />
+                        <div className="space-y-4">
+                            {statItems.map((item, i) => (
+                                <div key={i} className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`p-2 rounded-lg ${item.color}`} style={{ background: item.bg }}>
+                                            <item.icon size={16} aria-hidden="true" />
                                         </div>
-                                        <span className="text-[13px] font-black text-foreground/40 uppercase tracking-widest">{item.label}</span>
+                                        <span className="text-sm font-medium text-foreground/40">{item.label}</span>
                                     </div>
-                                    <span className="font-black text-foreground tracking-tight text-lg">
-                                        {item.value}
-                                    </span>
+                                    <span className="font-bold text-foreground">{item.value}</span>
                                 </div>
                             ))}
                         </div>
-                    </m.div>
+                    </motion.div>
                 </div>
 
-                {/* Right Column: Payment History */}
-                <m.div
+                {/* Right Column — Payment History */}
+                <motion.div
                     variants={itemVariants}
-                    className="lg:col-span-8 premium-card overflow-hidden h-fit bg-card/20 border-white/5"
+                    className="lg:col-span-8 premium-card overflow-hidden"
                 >
-                    <div className="p-10 border-b border-border/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 bg-secondary/10 backdrop-blur-md">
+                    {/* History Header */}
+                    <div className="p-6 border-b border-border/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
                         <div>
-                            <div className="flex items-center gap-3">
-                                <History size={24} className="text-primary" />
-                                <h3 className="text-2xl font-black tracking-tight text-foreground">
-                                    Verified Ledger
-                                </h3>
+                            <div className="flex items-center gap-2">
+                                <History size={20} className="text-primary" aria-hidden="true" />
+                                <h3 className="text-xl font-bold text-foreground">Payment History</h3>
                             </div>
-                            <p className="text-[10px] font-black text-foreground/30 uppercase tracking-[0.2em] mt-2">Authenticated Transaction history</p>
+                            <p className="text-xs text-foreground/30 font-medium mt-1">Verified transactions</p>
                         </div>
-                        <div className="px-5 py-2.5 bg-success/10 text-success text-[10px] font-black rounded-xl border border-success/20 shadow-xl shadow-success/5 tracking-widest">
-                            {payments.length} SUCCESSFUL HANDSHAKES
-                        </div>
+                        <span className="px-3 py-1.5 bg-success/10 text-success text-xs font-bold rounded-lg border border-success/20">
+                            {payments.length} payments
+                        </span>
                     </div>
 
+                    {/* Transactions Table */}
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="border-b border-border text-foreground/30 text-[10px] font-black uppercase tracking-[0.25em] bg-secondary/20">
-                                    <th className="px-10 py-5">IDENTIFIER</th>
-                                    <th className="px-10 py-5">TIMESTAMP</th>
-                                    <th className="px-10 py-5">PROTOCOL</th>
-                                    <th className="px-10 py-5 text-right">CREDIT AMOUNT</th>
+                                <tr className="border-b border-border/30 text-foreground/25 text-[11px] font-bold uppercase tracking-wider" style={{ background: 'rgba(255,255,255,0.01)' }}>
+                                    <th className="px-6 py-4">Transaction</th>
+                                    <th className="px-6 py-4">Date</th>
+                                    <th className="px-6 py-4">Method</th>
+                                    <th className="px-6 py-4 text-right">Amount</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-border/30">
+                            <tbody className="divide-y divide-border/20">
                                 {payments.map((payment, index) => (
-                                    <m.tr
+                                    <motion.tr
                                         key={payment.id}
-                                        initial={{ opacity: 0, x: 20 }}
+                                        initial={{ opacity: 0, x: 10 }}
                                         animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: index * 0.05 }}
-                                        className="hover:bg-secondary/30 transition-all duration-300 group"
+                                        transition={{ delay: index * 0.04 }}
+                                        className="hover:bg-white/[0.02] transition-all group"
                                     >
-                                        <td className="px-10 py-8">
-                                            <div className="flex items-center gap-4">
-                                                <div className="h-10 w-10 rounded-xl bg-success/10 text-success flex items-center justify-center border border-success/10 group-hover:bg-success group-hover:text-white transition-all">
-                                                    <CheckCircle2 size={18} />
+                                        <td className="px-6 py-5">
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-9 w-9 rounded-lg bg-success/10 text-success flex items-center justify-center border border-success/10 group-hover:bg-success group-hover:text-white transition-all">
+                                                    <CheckCircle2 size={16} aria-hidden="true" />
                                                 </div>
-                                                <span className="font-black text-foreground text-sm tracking-tight">
-                                                    {payment.installmentNumber ? `INSTALLMENT #${payment.installmentNumber}` : 'DIRECT FLOW'}
+                                                <span className="font-bold text-foreground text-sm">
+                                                    {payment.installmentNumber ? `Installment #${payment.installmentNumber}` : 'Payment'}
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-10 py-8 text-foreground/40 text-[13px] font-black tracking-widest">{payment.paymentDate}</td>
-                                        <td className="px-10 py-8">
-                                            <span className="px-3 py-1.5 rounded-xl bg-secondary border border-border text-[10px] font-black text-foreground/40 tracking-widest uppercase">
+                                        <td className="px-6 py-5 text-foreground/40 text-sm font-medium">{payment.paymentDate}</td>
+                                        <td className="px-6 py-5">
+                                            <span className="px-2.5 py-1 rounded-lg border border-border/50 text-[11px] font-bold text-foreground/35 uppercase" style={{ background: 'rgba(255,255,255,0.03)' }}>
                                                 {payment.paymentMethod}
                                             </span>
                                         </td>
-                                        <td className="px-10 py-8 text-right">
-                                            <p className="font-black text-success text-xl tracking-tight leading-none">
+                                        <td className="px-6 py-5 text-right">
+                                            <p className="font-bold text-success text-lg">
                                                 +{formatCurrency(payment.amount)}
                                             </p>
-                                            <span className="text-[10px] text-foreground/20 font-black uppercase tracking-widest mt-1.5 block">VERIFIED SYSTEM ENTRY</span>
                                         </td>
-                                    </m.tr>
+                                    </motion.tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
 
                     {payments.length === 0 && (
-                        <div className="p-32 text-center flex flex-col items-center gap-6">
-                            <m.div
+                        <div className="p-20 text-center flex flex-col items-center gap-4">
+                            <motion.div
                                 animate={{ rotate: [0, 360] }}
                                 transition={{ repeat: Infinity, duration: 10, ease: "linear" }}
-                                className="h-24 w-24 bg-secondary rounded-[2rem] flex items-center justify-center text-foreground/10 border border-border"
+                                className="h-16 w-16 rounded-2xl flex items-center justify-center text-foreground/10 border border-border"
+                                style={{ background: 'rgba(255,255,255,0.02)' }}
                             >
-                                <History size={48} />
-                            </m.div>
-                            <p className="text-foreground/40 font-black uppercase tracking-[0.25em] text-xs">No entries found in current ledger.</p>
+                                <History size={32} aria-hidden="true" />
+                            </motion.div>
+                            <p className="text-foreground/30 text-sm font-medium">No payments recorded yet.</p>
                         </div>
                     )}
 
-                    <div className="p-10 bg-secondary/20 border-t border-border/50 flex justify-center backdrop-blur-md">
-                        <m.button
+                    {/* Export button */}
+                    <div className="p-5 border-t border-border/20 flex justify-center" style={{ background: 'rgba(255,255,255,0.01)' }}>
+                        <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="text-[11px] font-black text-foreground/40 hover:text-primary transition-all flex items-center gap-3 uppercase tracking-[0.25em]"
+                            className="text-xs font-bold text-foreground/25 hover:text-primary transition-all flex items-center gap-2"
                         >
-                            Export Intelligence Statement <ArrowDownIcon size={18} className="animate-bounce" />
-                        </m.button>
+                            Export Statement <ArrowDownIcon size={14} className="animate-bounce" aria-hidden="true" />
+                        </motion.button>
                     </div>
-                </m.div>
-            </m.div>
+                </motion.div>
+            </motion.div>
 
             <Modal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                title={`New Transaction for ${customer.name}`}
+                title={`Payment for ${customer.name}`}
             >
                 <PaymentForm
                     customer={customer}
