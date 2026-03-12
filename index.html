@@ -949,24 +949,12 @@ function handleSignIn() {
   const pw = document.getElementById('signinPw').value;
   if (!email || !pw) { showToast('Please fill in all fields', 'error'); return; }
   setLoading(btn, true);
-  setTimeout(() => {
+  if (window.handleEmailSignInFirebase) {
+    window.handleEmailSignInFirebase(email, pw).catch(() => setLoading(btn, false));
+  } else {
+    showToast('Auth module loading...', 'warn');
     setLoading(btn, false);
-    showToast('Signed in successfully! Redirecting…', 'success');
-    
-    setTimeout(() => {
-      // Hide login UI elements
-      document.getElementById('loginPage').style.display = 'none';
-      document.querySelector('.bg').style.display = 'none';
-      document.querySelector('.grid-lines').style.display = 'none';
-      document.getElementById('particles').style.display = 'none';
-      document.querySelectorAll('.orb').forEach(el => el.style.display = 'none');
-      document.body.style.overflow = 'auto';
-      document.body.style.background = '#0a0b14'; // Reset to standard dark bg if needed
-      
-      // Reveal React App
-      document.getElementById('root').style.display = 'block';
-    }, 800);
-  }, 1800);
+  }
 }
 
 function handleSignUp() {
@@ -980,20 +968,38 @@ function handleSignUp() {
   if (!agree) { showToast('Please agree to the terms', 'warn'); return; }
   if (pw.length < 8) { showToast('Password too short (min 8 chars)', 'error'); return; }
   setLoading(btn, true);
-  setTimeout(() => {
+  if (window.handleSignUpFirebase) {
+    window.handleSignUpFirebase(email, pw).catch(() => setLoading(btn, false));
+  } else {
+    showToast('Auth module loading...', 'warn');
     setLoading(btn, false);
-    showToast('Account created! Welcome to FinanceBook 🎉', 'success');
-  }, 2000);
+  }
 }
 
 function handleForgot() {
+  const btn = document.querySelector('#forgotPanel .btn-submit');
   const email = document.getElementById('forgotEmail').value;
   if (!email) { showToast('Enter your email address', 'error'); return; }
-  showToast('Reset link sent! Check your inbox 📧', 'info');
+  setLoading(btn, true);
+  if (window.handleForgotFirebase) {
+    window.handleForgotFirebase(email).finally(() => setLoading(btn, false));
+  } else {
+    showToast('Auth module loading...', 'warn');
+    setLoading(btn, false);
+  }
 }
 
 function handleGoogle() {
-  showToast('Redirecting to Google…', 'info');
+  const btn = document.querySelector('.btn-google');
+  if (btn) btn.style.opacity = '0.7';
+  if (window.handleGoogleSignInFirebase) {
+    window.handleGoogleSignInFirebase().catch(() => {
+      if (btn) btn.style.opacity = '1';
+    });
+  } else {
+    if (btn) btn.style.opacity = '1';
+    showToast('Auth module loading...', 'warn');
+  }
 }
 
 // ── ENTER KEY SUBMIT ─────────────────────────────────────────────────
