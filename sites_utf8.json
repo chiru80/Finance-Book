@@ -1,0 +1,12 @@
+﻿{
+  "status": "success",
+  "result": {
+    "sites": [
+      {
+        "name": "projects/finance-book-pro-777888/sites/finance-book-pro-777888",
+        "defaultUrl": "https://finance-book-pro-777888.web.app",
+        "type": "DEFAULT_SITE"
+      }
+    ]
+  }
+}

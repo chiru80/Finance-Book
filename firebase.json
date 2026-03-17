@@ -1,7 +1,7 @@
 {
   "firestore": {
     "database": "(default)",
-    "location": "us-central1",
+    "location": "nam5",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
@@ -23,7 +23,7 @@
     "providers": {
       "emailPassword": true,
       "googleSignIn": {
-        "oAuthBrandDisplayName": "Finance Book Pro",
+        "oAuthBrandDisplayName": "Finance Book Premium",
         "supportEmail": "chirudeep80@gmail.com"
       }
     }

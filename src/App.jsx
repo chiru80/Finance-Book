@@ -10,6 +10,9 @@ import Signup from './pages/Signup';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 
+import WeeklyView from './pages/WeeklyView';
+import OnlinePayments from './pages/OnlinePayments';
+
 function App() {
   return (
     <AuthProvider>
@@ -24,9 +27,10 @@ function App() {
         }>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="weekly" element={<WeeklyView />} />
           <Route path="customers" element={<Customers />} />
           <Route path="customers/:id" element={<CustomerDetail />} />
-          <Route path="history" element={<div className="p-8 text-foreground/40 font-medium">History coming soon...</div>} />
+          <Route path="online-payments" element={<OnlinePayments />} />
           <Route path="settings" element={<div className="p-8 text-foreground/40 font-medium">Settings coming soon...</div>} />
         </Route>
 

@@ -6,16 +6,33 @@ import { motion } from 'framer-motion';
 export default function PaymentForm({ customer, onSubmit, onCancel }) {
     const [amount, setAmount] = useState(customer.installmentAmount || '');
     const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-    const [method, setMethod] = useState('UPI');
+    const [method, setMethod] = useState(localStorage.getItem('last_payment_mode') || 'Cash');
     const [notes, setNotes] = useState('');
+
+    const [error, setError] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setError('');
+
+        const payAmount = Number(amount);
+        if (isNaN(payAmount) || payAmount <= 0) {
+            setError('Please enter a valid positive amount.');
+            return;
+        }
+
+        const validMethods = ['Cash', 'PhonePe', 'GPay', 'UPI', 'Bank'];
+        if (!validMethods.includes(method)) {
+            setError('Please select a valid payment method.');
+            return;
+        }
+
+        localStorage.setItem('last_payment_mode', method);
         onSubmit({
-            amount: Number(amount),
+            amount: payAmount,
             paymentDate: date,
             paymentMethod: method,
-            notes,
+            notes: notes.trim().slice(0, 500),
         });
     };
 
@@ -37,6 +54,11 @@ export default function PaymentForm({ customer, onSubmit, onCancel }) {
             onSubmit={handleSubmit}
             className="space-y-6"
         >
+            {error && (
+                <div role="alert" className="p-3 bg-danger/10 border border-danger/20 text-danger rounded-xl text-xs font-bold text-center">
+                    {error}
+                </div>
+            )}
             <div className="space-y-5">
                 {/* Amount Field */}
                 <motion.div variants={itemVariants} className="space-y-2">
@@ -78,9 +100,9 @@ export default function PaymentForm({ customer, onSubmit, onCancel }) {
                     <motion.div variants={itemVariants} className="space-y-2">
                         <fieldset>
                             <legend className="text-xs font-bold text-foreground/40 uppercase tracking-wider ml-1 mb-2">Method</legend>
-                            <div className="flex p-1.5 rounded-xl border border-border" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                                {['UPI', 'Cash', 'Bank'].map((m) => (
-                                    <label key={m} className="flex-1 cursor-pointer">
+                            <div className="flex flex-wrap gap-1.5 p-1.5 rounded-xl border border-border" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                                {['Cash', 'PhonePe', 'GPay', 'UPI', 'Bank'].map((m) => (
+                                    <label key={m} className="flex-1 min-w-[60px] cursor-pointer">
                                         <input
                                             type="radio"
                                             className="sr-only peer"
@@ -90,7 +112,7 @@ export default function PaymentForm({ customer, onSubmit, onCancel }) {
                                             onChange={() => setMethod(m)}
                                             aria-label={`Payment method: ${m}`}
                                         />
-                                        <div className="py-2 text-center rounded-lg text-xs font-bold transition-all uppercase tracking-wider text-foreground/40 peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-md hover:text-foreground">
+                                        <div className="py-2 text-center rounded-lg text-[10px] font-black transition-all uppercase tracking-widest text-foreground/40 peer-checked:bg-primary peer-checked:text-white peer-checked:shadow-md hover:text-foreground">
                                             {m}
                                         </div>
                                     </label>

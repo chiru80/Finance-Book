@@ -45,12 +45,13 @@ export default function MobileDrawer({ isOpen, onClose }) {
     };
 
     const mainItems = [
-        { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-        { path: '/customers', label: 'All Customers', icon: Users },
+        { path: '/', label: 'Overview', icon: LayoutDashboard },
+        { path: '/weekly', label: 'Weekly View', icon: Calendar },
+        { path: '/customers', label: 'Ledger', icon: Users },
+        { path: '/online-payments', label: 'Online Payments', icon: IndianRupee },
     ];
 
     const moreItems = [
-        { path: '/add-customer', label: 'Add Customer', icon: UserPlus },
         { path: '/settings', label: 'Settings', icon: Settings },
     ];
 

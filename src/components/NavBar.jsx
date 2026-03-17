@@ -28,9 +28,10 @@ export default function NavBar({ totalBalance = 0, onMenuToggle }) {
     };
 
     const navItems = [
-        { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-        { path: '/customers', label: 'Customers', icon: Users },
-        { path: '/add-customer', label: 'Add Customer', icon: UserPlus },
+        { path: '/', label: 'Overview', icon: LayoutDashboard },
+        { path: '/weekly', label: 'Weekly View', icon: Calendar },
+        { path: '/customers', label: 'Ledger', icon: Users },
+        { path: '/online-payments', label: 'Payments', icon: IndianRupee },
     ];
 
     return (

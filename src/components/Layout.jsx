@@ -7,33 +7,60 @@ import MobileDrawer from './MobileDrawer';
 import Modal from './Modal';
 import CustomerForm from './CustomerForm';
 import { customerService } from '../services/customerService';
+import { deriveCustomerStats, formatCurrency } from '../utils/calculations';
 import { useAuth } from '../context/AuthContext';
+
+function SummaryTag({ label, value, color }) {
+    return (
+        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 border border-border/50 rounded-lg">
+            <span className="text-[9px] font-black text-foreground/20 uppercase tracking-widest">{label}</span>
+            <span className={`text-xs font-bold ${color}`}>{formatCurrency(value)}</span>
+        </div>
+    );
+}
 
 export default function Layout() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [totalBalance, setTotalBalance] = useState(0);
-    const { user } = useAuth();
-    const location = useLocation();
+    const [stats, setStats] = useState({ in: 0, bal: 0, online: 0, availableCash: 0 });
+    const [initialCapital, setInitialCapital] = useState(500000); // Default
 
-    // Close drawer on route change
+    // Fetch settings (initial capital)
     useEffect(() => {
-        setIsDrawerOpen(false);
-    }, [location.pathname]);
-
-    // Fetch total balance for navbar
-    useEffect(() => {
-        const fetchBalance = async () => {
-            try {
-                const customers = await customerService.getCustomers();
-                const total = customers.reduce((sum, c) => sum + (Number(c.totalPaid) || 0), 0);
-                setTotalBalance(total);
-            } catch (err) {
-                console.error('Error fetching balance:', err);
+        const unsubscribe = customerService.subscribeToSettings((settings) => {
+            if (settings && settings.initialCapital) {
+                 setInitialCapital(Number(settings.initialCapital));
             }
-        };
-        fetchBalance();
+        });
+        return () => unsubscribe();
     }, []);
+
+    // Fetch total stats with real-time listener
+    useEffect(() => {
+        const unsubscribe = customerService.subscribeToCustomers((customers) => {
+            let totalIn = 0;
+            let totalBal = 0;
+            let totalOnline = 0;
+            let totalLoanedOut = 0;
+
+            customers.forEach(c => {
+                const s = deriveCustomerStats(c);
+                totalIn += s.cashCollected;
+                totalBal += s.remainingBalance;
+                totalOnline += s.onlineCollected;
+                totalLoanedOut += Number(c.loanAmount) || 0;
+            });
+
+            setStats({ 
+                in: totalIn, 
+                bal: totalBal, 
+                online: totalOnline,
+                availableCash: initialCapital - totalLoanedOut 
+            });
+        });
+
+        return () => unsubscribe();
+    }, [initialCapital]);
 
     // Close drawer on Escape key
     useEffect(() => {
@@ -77,10 +104,16 @@ export default function Layout() {
             <main className="pt-20 px-4 sm:px-6 lg:px-10 pb-10 relative z-10 max-w-[1600px] mx-auto">
                 {/* Page Action Bar */}
                 <div className="mb-8 flex items-center justify-between">
-                    <div>
+                    <div className="flex flex-col">
                         <p className="text-xs text-foreground/30 font-medium">
                             Welcome back, {user?.email?.split('@')[0] || 'Admin'}
                         </p>
+                        <div className="flex items-center gap-2 mt-2 flex-wrap">
+                            <SummaryTag label="💵 CASH" value={stats.availableCash} color={stats.availableCash >= 0 ? "text-success" : "text-danger"} />
+                            <SummaryTag label="IN" value={stats.in} color="text-success" />
+                            <SummaryTag label="BAL" value={stats.bal} color="text-warning" />
+                            <SummaryTag label="ONLINE" value={stats.online} color="text-primary" />
+                        </div>
                     </div>
                     <motion.button
                         whileHover={{ scale: 1.03 }}

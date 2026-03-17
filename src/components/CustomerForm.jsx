@@ -14,12 +14,53 @@ export default function CustomerForm({ onSubmit, onCancel }) {
         notes: ''
     });
 
+    const [error, setError] = useState('');
+
+    const validateForm = () => {
+        if (!formData.name.trim() || formData.name.length > 50) {
+            setError('Name must be between 1 and 50 characters.');
+            return false;
+        }
+        
+        const phoneRegex = /^\+?[0-9]{10,15}$/;
+        if (!phoneRegex.test(formData.phone)) {
+            setError('Invalid phone number format.');
+            return false;
+        }
+
+        const loan = Number(formData.loanAmount);
+        const installment = Number(formData.installmentAmount);
+
+        if (isNaN(loan) || loan <= 0) {
+            setError('Loan amount must be a positive number.');
+            return false;
+        }
+
+        if (isNaN(installment) || installment <= 0) {
+            setError('Installment must be a positive number.');
+            return false;
+        }
+
+        if (installment > loan) {
+            setError('Installment cannot be greater than loan amount.');
+            return false;
+        }
+
+        return true;
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        setError('');
+        
+        if (!validateForm()) return;
+
         onSubmit({
             ...formData,
+            name: formData.name.trim(),
             loanAmount: Number(formData.loanAmount),
-            installmentAmount: Number(formData.installmentAmount)
+            installmentAmount: Number(formData.installmentAmount),
+            notes: formData.notes.trim().slice(0, 500)
         });
     };
 
@@ -41,6 +82,11 @@ export default function CustomerForm({ onSubmit, onCancel }) {
             onSubmit={handleSubmit}
             className="space-y-6 max-h-[75vh] overflow-y-auto pr-2 custom-scrollbar"
         >
+            {error && (
+                <div role="alert" className="p-3 bg-danger/10 border border-danger/20 text-danger rounded-xl text-xs font-bold text-center">
+                    {error}
+                </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Name */}
                 <motion.div variants={itemVariants} className="space-y-2 col-span-full">
