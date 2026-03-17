@@ -20,7 +20,7 @@ const makeVillageCode = (name) => {
   const clean = name.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
   if (clean.length <= 3) return clean.padEnd(3, 'X');
   // Take first char + next 2 non-vowel chars
-  const vowels = new Set(['A','E','I','O','U']);
+  const vowels = new Set(['A', 'E', 'I', 'O', 'U']);
   let code = clean[0];
   let i = 1;
   while (code.length < 3 && i < clean.length) {
@@ -168,22 +168,22 @@ const calcCustomer = (c) => {
   const weeksData = c.weeks.slice(0, c.weeksTotal || 12);
   const absentCount = weeksData.filter(v => v === ABSENT).length;
   const effectiveTotal = (c.weeksTotal || 12) + absentCount;
-  
+
   const paid = weeksData.reduce((s, v) => s + (v > 0 ? v : 0), 0);
   const remaining = (c.creditValue || 0) - paid;
-  
+
   const weeksPaid = weeksData.filter(v => v != null && v > 0).length;
   const weeksRemaining = effectiveTotal - weeksPaid - absentCount;
-  
+
   const weeklyInstall = c.creditValue && c.weeksTotal
     ? Math.round(c.creditValue / c.weeksTotal)
     : null;
 
   const status =
     !c.name ? "empty"
-    : (c.creditValue > 0 && remaining <= 0) ? "paid"
-    : (c.creditValue > 0 && remaining < c.creditValue * 0.1) ? "near"
-    : "active";
+      : (c.creditValue > 0 && remaining <= 0) ? "paid"
+        : (c.creditValue > 0 && remaining < c.creditValue * 0.1) ? "near"
+          : "active";
 
   return {
     ...c,
@@ -201,10 +201,10 @@ const calcCustomer = (c) => {
 // ─── Status badge ───────────────────────────────────────────────────────────
 const StatusBadge = ({ status }) => {
   const cfg = {
-    paid:   { label: "✅ PAID",      bg: "#d1fae5", color: "#065f46" },
-    near:   { label: "🟡 NEAR DONE", bg: "#fef3c7", color: "#92400e" },
-    active: { label: "🔴 ACTIVE",    bg: "#fee2e2", color: "#991b1b" },
-    empty:  { label: "—",            bg: "#f3f4f6", color: "#9ca3af" },
+    paid: { label: "✅ PAID", bg: "#d1fae5", color: "#065f46" },
+    near: { label: "🟡 NEAR DONE", bg: "#fef3c7", color: "#92400e" },
+    active: { label: "🔴 ACTIVE", bg: "#fee2e2", color: "#991b1b" },
+    empty: { label: "—", bg: "#f3f4f6", color: "#9ca3af" },
   }[status] || { label: "—", bg: "#f3f4f6", color: "#9ca3af" };
   return (
     <span style={{
@@ -230,16 +230,20 @@ const EditCell = ({ value, type = "text", onChange, placeholder = "", style = {}
       value={draft} placeholder={placeholder}
       onChange={e => setDraft(e.target.value)}
       onBlur={commit} onKeyDown={e => { if (e.key === "Enter") commit(); if (e.key === "Escape") { setDraft(value ?? ""); setEditing(false); } }}
-      style={{ width: "100%", border: "none", outline: "2px solid var(--accent, #6366f1)", borderRadius: 6,
+      style={{
+        width: "100%", border: "none", outline: "2px solid var(--accent, #6366f1)", borderRadius: 6,
         padding: "4px 8px", fontSize: 14, fontFamily: "inherit", fontWeight: 500,
-        background: "var(--input-bg, #1a1d35)", color: "var(--text-primary, #f0f0ff)", caretColor: "var(--accent, #6366f1)", ...style }} />
+        background: "var(--input-bg, #1a1d35)", color: "var(--text-primary, #f0f0ff)", caretColor: "var(--accent, #6366f1)", ...style
+      }} />
   );
   return (
     <div onClick={() => setEditing(true)} title="Click to edit"
-      style={{ cursor: "text", minHeight: 28, padding: "5px 6px", borderRadius: 6,
+      style={{
+        cursor: "text", minHeight: 28, padding: "5px 6px", borderRadius: 6,
         fontSize: type === "number" ? 15 : 14, fontWeight: value != null && value !== "" ? 600 : 400,
         color: value != null && value !== "" ? "var(--text-primary, #f0f0ff)" : "var(--text-muted, #4a5070)",
-        transition: "background .15s", lineHeight: "1.4", ...style }}
+        transition: "background .15s", lineHeight: "1.4", ...style
+      }}
       onMouseEnter={e => e.currentTarget.style.background = "var(--hover-bg, rgba(255,255,255,0.06))"}
       onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
       {value != null && value !== "" ? (type === "number" ? (value > 0 ? `₹${Number(value).toLocaleString("en-IN")}` : value) : value) : <span style={{ color: "var(--text-muted, #4a5070)", fontStyle: "italic", fontSize: 13 }}>{placeholder || "—"}</span>}
@@ -251,18 +255,18 @@ const EditCell = ({ value, type = "text", onChange, placeholder = "", style = {}
 const WeekCell = ({ weekIndex, value, loanDate, weeklyInstall, onChange }) => {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
-  
+
   const isAbsent = value === ABSENT;
   const isPaid = value > 0;
   const isEmpty = value == null;
-  
+
   const dueDate = loanDate
     ? (() => {
-        const d = new Date(loanDate);
-        if (isNaN(d)) return null;
-        d.setDate(d.getDate() + (weekIndex + 1) * 7);
-        return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
-      })()
+      const d = new Date(loanDate);
+      if (isNaN(d)) return null;
+      d.setDate(d.getDate() + (weekIndex + 1) * 7);
+      return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+    })()
     : null;
 
   const commit = () => {
@@ -336,7 +340,7 @@ export default function FinanceBook() {
   const [currentUser, setCurrentUser] = useState(null);
   const [villages, setVillages] = useState(EMPTY_VILLAGES);
   const [dataLoaded, setDataLoaded] = useState(false);
-  
+
   const [activeVillage, setActiveVillage] = useState("VLG1");
   const [searchQuery, setSearchQuery] = useState("");
   const [view, setView] = useState("ledger"); // ledger | weekly | search | analytics | settings
@@ -345,7 +349,7 @@ export default function FinanceBook() {
   const [showAddVillage, setShowAddVillage] = useState(false);
   const [newVillageName, setNewVillageName] = useState("");
   const [expandedCustomer, setExpandedCustomer] = useState(null);
-  
+
   // V2 Features State
   const [villageNames, setVillageNames] = useState({});
   const [lang, setLang] = useState("en");
@@ -366,7 +370,7 @@ export default function FinanceBook() {
     if (savedLang) setLang(savedLang);
     if (savedTheme) setTheme(savedTheme);
     if (savedCap) setCapitalAmount(Number(savedCap));
-    
+
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -419,7 +423,7 @@ export default function FinanceBook() {
     if (!currentUser) return;
     try {
       const ref = doc(db, 'users', currentUser.uid, 'data', 'villages');
-      await setDoc(ref, { 
+      await setDoc(ref, {
         villages: newVillages,
         villageNames: newVillageNames
       }, { merge: true });
@@ -552,15 +556,15 @@ export default function FinanceBook() {
         // Ensure array is long enough
         while (weeks.length <= weekIdx) weeks.push(null);
         weeks[weekIdx] = value;
-        
+
         // Count absent weeks in the plan range
         const planWeeks = weeks.slice(0, c.weeksTotal || 12);
         const absentCount = planWeeks.filter(v => v === ABSENT).length;
-        
+
         // Effective total = base plan + absent extensions
         const effectiveTotal = (c.weeksTotal || 12) + absentCount;
         while (weeks.length < effectiveTotal) weeks.push(null);
-        
+
         return { ...c, weeks };
       }),
     }));
@@ -571,12 +575,12 @@ export default function FinanceBook() {
       const list = prev[villageId] || [];
       const serial = list.length + 1;
       const newCustomer = makeCustomer(villageId, serial);
-      
+
       const defaultMeta = VILLAGE_META.find(v => v.id === villageId);
       const defaultName = defaultMeta ? defaultMeta.name : villageId;
       const name = villageNames[villageId] || defaultName;
       const code = makeVillageCode(name);
-      
+
       newCustomer.id = `${code}-${String(serial).padStart(3, "0")}`;
 
       return { ...prev, [villageId]: [...list, newCustomer] };
@@ -695,12 +699,12 @@ export default function FinanceBook() {
           {/* Nav Tabs */}
           <div style={{ display: "flex", gap: 4 }}>
             {[
-              { key: "ledger",    label: t("ledger") },
-              { key: "weekly",    label: t("weekly") },
-              { key: "schedule",  label: t("schedule") },
-              { key: "search",    label: t("search") },
+              { key: "ledger", label: t("ledger") },
+              { key: "weekly", label: t("weekly") },
+              { key: "schedule", label: t("schedule") },
+              { key: "search", label: t("search") },
               { key: "analytics", label: t("analytics") },
-              { key: "settings",  label: t("settings") },
+              { key: "settings", label: t("settings") },
             ].map(({ key, label }) => (
               <button key={key} onClick={() => setView(key)}
                 style={{
@@ -744,11 +748,11 @@ export default function FinanceBook() {
       {/* ── MOBILE BOTTOM NAV ── */}
       <div className="mobile-bottom-nav">
         {[
-          { key: "ledger",    icon: "📋", label: "Ledger" },
-          { key: "weekly",    icon: "📅", label: "Weekly" },
-          { key: "schedule",  icon: "📆", label: "Sched" },
+          { key: "ledger", icon: "📋", label: "Ledger" },
+          { key: "weekly", icon: "📅", label: "Weekly" },
+          { key: "schedule", icon: "📆", label: "Sched" },
           { key: "analytics", icon: "📈", label: "Stats" },
-          { key: "settings",  icon: "⚙️", label: "Set" },
+          { key: "settings", icon: "⚙️", label: "Set" },
         ].map(({ key, icon, label }) => (
           <button key={key} onClick={() => setView(key)}
             style={{
@@ -769,11 +773,11 @@ export default function FinanceBook() {
             const isActive = id === activeVillage;
             const count = (villages[id] || []).filter(c => c.name).length;
             const isEditing = editingVillage === id;
-            
+
             return (
               <div key={id} style={{ display: "flex", alignItems: "center" }}>
                 {isEditing ? (
-                  <input 
+                  <input
                     autoFocus
                     onFocus={e => e.target.select()}
                     value={villageDraft}
@@ -830,9 +834,11 @@ export default function FinanceBook() {
             <span style={{ position: "absolute", left: view === "search" ? 16 : 12, top: "50%", transform: "translateY(-50%)", fontSize: view === "search" ? 18 : 14 }}>🔍</span>
             <input value={searchQuery} onChange={e => { setSearchQuery(e.target.value); setView("search"); }}
               placeholder={t("searchPlaceholder")}
-              style={{ width: "100%", padding: view === "search" ? "14px 16px 14px 48px" : "10px 12px 10px 36px", borderRadius: view === "search" ? 14 : 10,
+              style={{
+                width: "100%", padding: view === "search" ? "14px 16px 14px 48px" : "10px 12px 10px 36px", borderRadius: view === "search" ? 14 : 10,
                 border: view === "search" ? "2px solid #6366f1" : "1px solid var(--border-color)", background: "var(--bg-surface)", color: "var(--text-strong)",
-                fontSize: view === "search" ? 15 : 13, outline: "none", boxSizing: "border-box", fontWeight: 500 }} />
+                fontSize: view === "search" ? 15 : 13, outline: "none", boxSizing: "border-box", fontWeight: 500
+              }} />
           </div>
         )}
 
@@ -849,9 +855,11 @@ export default function FinanceBook() {
               <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", fontSize: 18 }}>🔍</span>
               <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} autoFocus
                 placeholder="Search by name, customer ID, village, phone number…"
-                style={{ width: "100%", padding: "14px 16px 14px 48px", borderRadius: 14,
+                style={{
+                  width: "100%", padding: "14px 16px 14px 48px", borderRadius: 14,
                   border: "2px solid #6366f1", background: "var(--bg-surface)", color: "var(--text-strong)",
-                  fontSize: 15, outline: "none", boxSizing: "border-box", fontWeight: 500 }} />
+                  fontSize: 15, outline: "none", boxSizing: "border-box", fontWeight: 500
+                }} />
             </div>
 
             {searchResults.length === 0 ? (
@@ -1015,8 +1023,10 @@ export default function FinanceBook() {
                 </div>
               </div>
               <button onClick={() => addCustomer(activeVillage)}
-                style={{ padding: "10px 22px", background: activeVillageMeta.color, border: "none", borderRadius: 10,
-                  color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+                style={{
+                  padding: "10px 22px", background: activeVillageMeta.color, border: "none", borderRadius: 10,
+                  color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", gap: 8
+                }}>
                 {t("addCustomer")}
               </button>
             </div>
@@ -1257,7 +1267,8 @@ export default function FinanceBook() {
                           const isAbsent = val === ABSENT;
                           const isPaid = val > 0;
                           return (
-                            <td key={wi} style={{ padding: "4px 6px", borderBottom: "1px solid var(--border-color)", textAlign: "center",
+                            <td key={wi} style={{
+                              padding: "4px 6px", borderBottom: "1px solid var(--border-color)", textAlign: "center",
                               opacity: isWithinCustomerPlan ? 1 : 0.25,
                             }}>
                               {isWithinCustomerPlan ? (
@@ -1293,7 +1304,7 @@ export default function FinanceBook() {
                       </tr>
                     );
                   })}
-                  
+
                   {currentCustomers.length === 0 && (
                     <tr><td colSpan={16} style={{ padding: 60, textAlign: "center", color: "var(--text-muted)" }}>
                       No customers yet. <button onClick={() => addCustomer(activeVillage)}
@@ -1507,11 +1518,11 @@ export default function FinanceBook() {
             <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border-color)", borderRadius: 16, padding: 24, marginBottom: 24, boxShadow: "var(--shadow)" }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text-strong)", marginBottom: 6 }}>💰 {t("capitalMgt")}</div>
               <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 16 }}>Set your initial business capital to calculate profit accurately.</div>
-              
+
               <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
                 <div style={{ position: "relative", width: 200 }}>
                   <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", fontWeight: 700 }}>₹</span>
-                  <input 
+                  <input
                     type="number"
                     value={capitalAmount}
                     onChange={e => setCapitalAmount(Number(e.target.value))}
@@ -1520,7 +1531,7 @@ export default function FinanceBook() {
                 </div>
                 <div style={{ fontSize: 13, color: "var(--text-strong)" }}>
                   Total Loaned: <strong style={{ color: "var(--color-danger, #ef4444)" }}>{fmt(masterAnalytics.totalLoan)}</strong>
-                  <br/>
+                  <br />
                   Available Cash: <strong style={{ color: "var(--color-success, #10b981)" }}>{fmt(capitalAmount - masterAnalytics.totalLoan + masterAnalytics.totalPaid)}</strong>
                 </div>
               </div>
@@ -1529,7 +1540,7 @@ export default function FinanceBook() {
             {/* Application Settings (Theme/Lang) */}
             <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border-color)", borderRadius: 16, padding: 24, marginBottom: 24, boxShadow: "var(--shadow)" }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text-strong)", marginBottom: 16 }}>⚙️ Display Settings</div>
-              
+
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                 {/* Theme */}
                 <div style={{ border: "1px solid var(--border-color)", borderRadius: 12, padding: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -1541,7 +1552,7 @@ export default function FinanceBook() {
                     {theme === "dark" ? "Dark 🌙" : "Light ☀️"}
                   </button>
                 </div>
-                
+
                 {/* Language */}
                 <div style={{ border: "1px solid var(--border-color)", borderRadius: 12, padding: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div>
@@ -1559,7 +1570,7 @@ export default function FinanceBook() {
             <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border-color)", borderRadius: 16, padding: 24, boxShadow: "var(--shadow)" }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text-strong)", marginBottom: 6 }}>🔒 {t("passwordUpdate")}</div>
               <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 16 }}>Secured by Firebase Admin (Mock interface)</div>
-              
+
               <div style={{ display: "flex", gap: 12 }}>
                 <input type="password" placeholder="New Password..." style={{ flex: 1, padding: "10px 16px", borderRadius: 8, border: "1px solid var(--border-color)", background: "var(--bg-stripe-alt)", color: "var(--text-strong)" }} />
                 <button onClick={() => showToast("Password updated successfully")} style={{ padding: "10px 24px", borderRadius: 8, border: "none", background: "#6366f1", color: "#fff", fontWeight: 700, cursor: "pointer" }}>Save</button>
